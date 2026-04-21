@@ -30,8 +30,13 @@ export default function Admin() {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/products`);
-      setProducts(res.data || []);
+
+      console.log("API RESPONSE 👉", res.data); // 🔥 see what backend sends
+
+      setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
+      console.error("FETCH ERROR 👉", err.response || err.message);
+
       toast.error("Failed to load products");
     } finally {
       setLoading(false);
