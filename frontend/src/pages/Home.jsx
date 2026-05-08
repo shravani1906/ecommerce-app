@@ -147,12 +147,9 @@ export default function Home() {
             >
               <div className="h-48">
                 <img
-                  src={
-                    product.images?.[0]
-                      ? `${BASE_URL}${product.images[0]}`
-                      : "https://via.placeholder.com/300"
-                  }
-                  className="w-full h-full object-cover"
+                  src={product.images?.[0] || "https://picsum.photos/600/500"}
+                  alt={product.title}
+                  className="w-full h-[400px] object-contain"
                 />
               </div>
 

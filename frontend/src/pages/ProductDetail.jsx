@@ -50,15 +50,9 @@ export default function ProductDetail() {
         <div className="grid md:grid-cols-2 gap-10 mt-6">
           <div className="relative bg-white dark:bg-gray-800 p-4 rounded-xl">
             <img
-              src={
-                product.images?.[0]
-                  ? product.images[0] // ← FIXED: Direct Cloudinary URL
-                  : "https://via.placeholder.com/400"
-              }
+              src={product.images?.[0] || "https://picsum.photos/600/500"}
+              alt={product.title}
               className="w-full h-[400px] object-contain"
-              onError={(e) => {
-                e.target.src = "https://via.placeholder.com/400";
-              }}
             />
 
             <button

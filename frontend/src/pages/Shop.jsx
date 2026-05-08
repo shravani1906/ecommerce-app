@@ -197,14 +197,10 @@ export default function Shop() {
                     <div className="h-48 bg-gray-100 rounded-xl overflow-hidden">
                       <img
                         src={
-                          product.images?.[0]
-                            ? product.images[0] // ← FIXED: Direct Cloudinary URL
-                            : "https://via.placeholder.com/300"
+                          product.images?.[0] || "https://picsum.photos/400/300"
                         }
+                        alt={product.title}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/300";
-                        }}
                       />
                     </div>
 
