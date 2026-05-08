@@ -30,13 +30,8 @@ export default function Admin() {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/products`);
-
-      console.log("API RESPONSE 👉", res.data); // 🔥 see what backend sends
-
       setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error("FETCH ERROR 👉", err.response || err.message);
-
       toast.error("Failed to load products");
     } finally {
       setLoading(false);
@@ -236,12 +231,12 @@ export default function Admin() {
             key={p._id}
             className="bg-white dark:bg-[#1e1e1e] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all flex flex-col h-full"
           >
-            {/* Image Container - Fixed Height & Alignment */}
+            {/* Image Container */}
             <div className="relative h-56 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
               <img
                 src={
                   p.images?.[0]
-                    ? `${BASE_URL}${p.images[0]}`
+                    ? p.images[0] // ← FIXED: Direct Cloudinary URL
                     : "https://via.placeholder.com/400x300?text=No+Image"
                 }
                 alt={p.title}
@@ -253,7 +248,7 @@ export default function Admin() {
               />
             </div>
 
-            {/* Content - Perfect Alignment */}
+            {/* Content */}
             <div className="p-5 flex flex-col flex-1">
               <h3 className="font-semibold text-lg line-clamp-2 heading-font text-gray-900 dark:text-white">
                 {p.title}

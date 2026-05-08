@@ -7,6 +7,7 @@ import { addToCart, increaseQty, decreaseQty } from "../redux/cartSlice";
 import { ChevronDown } from "lucide-react";
 
 import { BASE_URL } from "../config";
+
 export default function Shop() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
@@ -197,10 +198,13 @@ export default function Shop() {
                       <img
                         src={
                           product.images?.[0]
-                            ? `${BASE_URL}${product.images[0]}`
+                            ? product.images[0] // ← FIXED: Direct Cloudinary URL
                             : "https://via.placeholder.com/300"
                         }
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/300";
+                        }}
                       />
                     </div>
 

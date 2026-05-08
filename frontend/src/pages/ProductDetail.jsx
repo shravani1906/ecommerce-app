@@ -52,10 +52,13 @@ export default function ProductDetail() {
             <img
               src={
                 product.images?.[0]
-                  ? `${BASE_URL}${product.images[0]}`
+                  ? product.images[0] // ← FIXED: Direct Cloudinary URL
                   : "https://via.placeholder.com/400"
               }
               className="w-full h-[400px] object-contain"
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/400";
+              }}
             />
 
             <button
