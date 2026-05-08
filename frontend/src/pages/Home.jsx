@@ -147,14 +147,11 @@ export default function Home() {
             >
               <div className="h-48">
                 <img
-                  src={
-                    product.images?.[0]
-                      ? product.images[0]
-                      : "https://via.placeholder.com/300"
-                  }
-                  className="w-full h-full object-cover"
+                  src={product.images?.[0] || ""}
+                  alt={product.title}
+                  className="w-full h-[400px] object-contain"
                   onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/300";
+                    e.target.style.display = "none";
                   }}
                 />
               </div>

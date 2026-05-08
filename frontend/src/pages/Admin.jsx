@@ -233,18 +233,20 @@ export default function Admin() {
           >
             {/* Image Container */}
             <div className="relative h-56 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
-              <img
-                src={
-                  p.images?.[0]
-                    ? p.images[0]
-                    : "https://via.placeholder.com/400x300?text=No+Image"
-                }
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.src =
-                    "https://via.placeholder.com/400x300?text=No+Image";
-                }}
-              />
+              {p.images && p.images.length > 0 ? (
+                <img
+                  src={p.images[0]}
+                  alt={p.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
+                />
+              ) : (
+                <span className="text-8xl opacity-70 flex items-center justify-center h-full">
+                  {p.category === "candles" ? "🕯️" : "🧶"}
+                </span>
+              )}
             </div>
 
             {/* Content */}

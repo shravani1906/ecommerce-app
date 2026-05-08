@@ -195,17 +195,20 @@ export default function Shop() {
                     className="bg-card rounded-2xl p-3"
                   >
                     <div className="h-48 bg-gray-100 rounded-xl overflow-hidden">
-                      <img
-                        src={
-                          product.images?.[0]
-                            ? product.images[0]
-                            : "https://via.placeholder.com/300"
-                        }
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/300";
-                        }}
-                      />
+                      {product.images && product.images.length > 0 ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <span className="text-6xl flex items-center justify-center h-full opacity-70">
+                          {product.category === "candles" ? "🕯️" : "🧶"}
+                        </span>
+                      )}
                     </div>
 
                     <h3 className="mt-2 font-semibold">{product.title}</h3>
