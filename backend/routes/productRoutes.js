@@ -2,18 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
 const auth = require("../middleware/authMiddleware");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const upload = multer({ storage });
+const upload = require("../middleware/upload"); // ← Memory storage
 
 /* GET ALL PRODUCTS */
 router.get("/", async (req, res) => {
@@ -25,15 +14,13 @@ router.get("/", async (req, res) => {
   }
 });
 
-/* GET SINGLE PRODUCT (FIX FOR PRODUCT DETAIL PAGE) */
+/* GET SINGLE PRODUCT */
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-
     if (!product) {
       return res.status(404).json({ msg: "Product not found" });
     }
-
     res.json(product);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
@@ -41,7 +28,7 @@ router.get("/:id", async (req, res) => {
 });
 
 /* CREATE PRODUCT */
-router.post("/", auth, upload.array("images"), async (req, res) => {
+router.post("/", auth, upload.array("images", 5), async (req, res) => {
   try {
     const {
       title,
@@ -55,17 +42,12 @@ router.post("/", auth, upload.array("images"), async (req, res) => {
       dimensions,
     } = req.body;
 
-    const images = req.files
-      ? req.files.map((file) => `/uploads/${file.filename}`)
-      : [];
-
     const product = new Product({
       title,
       description,
-      price,
+      price: Number(price),
       category,
-      stock,
-      images,
+      stock: Number(stock) || 10,
       scent,
       burnTime,
       yarnType,
@@ -76,19 +58,15 @@ router.post("/", auth, upload.array("images"), async (req, res) => {
     await product.save();
     res.status(201).json(product);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ msg: "Error creating product" });
   }
 });
 
 /* UPDATE PRODUCT */
-router.put("/:id", auth, upload.array("images"), async (req, res) => {
+router.put("/:id", auth, upload.array("images", 5), async (req, res) => {
   try {
     const updateData = { ...req.body };
-
-    if (req.files?.length) {
-      updateData.images = req.files.map((file) => `/uploads/${file.filename}`);
-    }
 
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
@@ -96,6 +74,7 @@ router.put("/:id", auth, upload.array("images"), async (req, res) => {
 
     res.json(product);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: "Error updating product" });
   }
 });
