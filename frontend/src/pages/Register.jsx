@@ -3,6 +3,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
+import { BASE_URL } from "../config";
+
 export default function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -33,7 +35,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await axios.post("`${BASE_URL}/api/auth/register`", {
+      const res = await axios.post(`${BASE_URL}/api/auth/register`, {
         name: form.name,
         email: form.email,
         password: form.password,
@@ -42,10 +44,8 @@ export default function Register() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      toast.success(
-        `Welcome to Wick & Weave, ${form.name}! ✨ Your account is ready.`,
-      );
-      navigate("/"); // Go to home page after successful register
+      toast.success(`Welcome to Wick & Weave, ${form.name}! ✨`);
+      navigate("/");
     } catch (err) {
       toast.error(
         err.response?.data?.msg || "Something went wrong. Please try again.",
@@ -66,58 +66,50 @@ export default function Register() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-          <div>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email address"
-              className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email address"
+            className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-          <div>
-            <input
-              type="password"
-              name="password"
-              placeholder="Password (min 6 characters)"
-              className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password (min 6 characters)"
+            className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
 
-          <div>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            className="w-full px-6 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            required
+          />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-primary hover:bg-amber-700 text-white rounded-2xl font-medium transition disabled:opacity-70 flex items-center justify-center gap-2"
+            className="w-full py-4 bg-primary hover:bg-amber-700 text-white rounded-2xl font-medium transition disabled:opacity-70"
           >
             {loading ? "Creating your account..." : "Create Account"}
           </button>
