@@ -6,9 +6,9 @@ import toast from "react-hot-toast";
 import { clearCart } from "../redux/cartSlice";
 
 export default function Checkout() {
-  const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { items, total } = useSelector((state) => state.cart);
 
   const [shippingAddress, setShippingAddress] = useState({
     name: "",
@@ -47,11 +47,6 @@ export default function Checkout() {
     try {
       const token = localStorage.getItem("token");
 
-      const totalAmount = items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0,
-      );
-
       const orderData = {
         items: items.map((item) => ({
           product: item._id,
@@ -59,28 +54,29 @@ export default function Checkout() {
           price: item.price,
           quantity: item.quantity,
         })),
-        totalAmount,
+        totalAmount: total,
         shippingAddress,
       };
 
-      // TRY API (BUT WE IGNORE FAILURE)
-      await axios.post(`${BASE_URL}/api/auth/orders`, orderData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      // Try to send order (demo mode)
+      await axios.post(
+        "https://ecommerce-app-zwoc.onrender.com/api/orders",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
-      console.log("ORDER SENT SUCCESSFULLY");
+      toast.success("Order placed successfully! 🎉");
     } catch (err) {
-      console.log("ORDER ERROR IGNORED:", err.response?.data || err.message);
+      console.log("Order API error (demo mode):", err.message);
+      toast.success("Order placed successfully! 🎉 (Demo Mode)");
     }
 
-    // 🔥 FORCE SUCCESS (TEMP FIX)
-    toast.success("Order placed successfully! 🎉 (Demo Mode)");
     dispatch(clearCart());
     navigate("/profile");
-
     setLoading(false);
   };
 
@@ -101,16 +97,17 @@ export default function Checkout() {
                 value={shippingAddress.name}
                 onChange={handleInputChange}
                 className="w-full px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-[#2a2a2a]"
+                required
               />
 
               <input
                 name="phone"
                 type="tel"
-                inputMode="numeric"
                 placeholder="Phone Number"
                 value={shippingAddress.phone}
                 onChange={handleInputChange}
                 className="w-full px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-[#2a2a2a]"
+                required
               />
 
               <input
@@ -119,6 +116,7 @@ export default function Checkout() {
                 value={shippingAddress.address}
                 onChange={handleInputChange}
                 className="w-full px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-[#2a2a2a]"
+                required
               />
 
               <div className="grid grid-cols-2 gap-4">
@@ -141,39 +139,55 @@ export default function Checkout() {
 
               <input
                 name="pincode"
-                inputMode="numeric"
                 placeholder="Pincode"
                 value={shippingAddress.pincode}
                 onChange={handleInputChange}
                 className="w-full px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-2xl bg-white dark:bg-[#2a2a2a]"
+                required
               />
             </div>
           </div>
 
-          {/* ORDER SUMMARY */}
+          {/* ORDER SUMMARY WITH IMAGES */}
           <div className="bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 p-8 rounded-3xl shadow h-fit">
             <h2 className="text-2xl font-semibold mb-6">Order Summary</h2>
 
-            <div className="space-y-4 mb-8">
+            <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto">
               {items.map((item) => (
-                <div key={item._id} className="flex justify-between text-sm">
-                  <span>
-                    {item.title} × {item.quantity}
-                  </span>
-                  <span>₹{item.price * item.quantity}</span>
+                <div key={item._id} className="flex gap-4">
+                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden flex-shrink-0">
+                    {item.images?.[0] ? (
+                      <img
+                        src={item.images[0]} // ← Direct Cloudinary URL
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-3xl">
+                        {item.category === "candles" ? "🕯️" : "🧶"}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <h4 className="font-medium leading-tight">{item.title}</h4>
+                    <p className="text-sm text-gray-500">
+                      Qty: {item.quantity}
+                    </p>
+                    <p className="font-semibold">
+                      ₹{item.price * item.quantity}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
 
             <div className="border-t pt-6 flex justify-between text-xl font-semibold">
               <span>Total</span>
-              <span>
-                ₹
-                {items.reduce(
-                  (sum, item) => sum + item.price * item.quantity,
-                  0,
-                )}
-              </span>
+              <span>₹{total}</span>
             </div>
 
             <button
@@ -185,7 +199,7 @@ export default function Checkout() {
             </button>
 
             <p className="text-center text-xs text-gray-500 mt-4">
-              Demo mode active • Orders not saved to server
+              Demo Mode • Orders not saved to database yet
             </p>
           </div>
         </div>

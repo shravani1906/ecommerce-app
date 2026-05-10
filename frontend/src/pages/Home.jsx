@@ -119,11 +119,17 @@ export default function Home() {
                   <div className="h-52 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
                     {product?.images?.[0] ? (
                       <img
-                        src={`${BASE_URL}${product.images[0]}`}
+                        src={product.images[0]} // ← FIXED: Direct URL
                         className="w-full h-full object-cover"
+                        alt={cat}
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
                       />
                     ) : (
-                      "No product"
+                      <span className="text-7xl">
+                        {cat === "candles" ? "🕯️" : "🧶"}
+                      </span>
                     )}
                   </div>
                   <div className="p-6 text-center">
@@ -137,39 +143,46 @@ export default function Home() {
       </div>
 
       {/* FIXED MARQUEE */}
-      <div className="relative w-full overflow-hidden">
-        <div className="flex w-max gap-6 whitespace-nowrap animate-[marquee_20s_linear_infinite]">
+      <div className="relative w-full overflow-hidden py-8 bg-card">
+        <div className="flex w-max gap-6 whitespace-nowrap animate-[marquee_25s_linear_infinite]">
           {[...products, ...products].map((product, i) => (
             <Link
               key={`${product._id}-${i}`}
               to={`/product/${product._id}`}
-              className="min-w-[260px] flex-shrink-0 bg-white dark:bg-[#1e1e1e] rounded-3xl overflow-hidden"
+              className="min-w-[260px] flex-shrink-0 bg-white dark:bg-[#1e1e1e] rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition"
             >
-              <div className="h-48">
-                <img
-                  src={product.images?.[0] || ""}
-                  alt={product.title}
-                  className="w-full h-[400px] object-contain"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
+              <div className="h-48 bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                {product.images?.[0] ? (
+                  <img
+                    src={product.images[0]} // ← FIXED: Direct Cloudinary URL
+                    alt={product.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <span className="text-6xl">
+                    {product.category === "candles" ? "🕯️" : "🧶"}
+                  </span>
+                )}
               </div>
 
               <div className="p-5">
-                <p>{product.title}</p>
-                <p className="text-primary">₹{product.price}</p>
+                <p className="font-medium line-clamp-1">{product.title}</p>
+                <p className="text-primary font-semibold">₹{product.price}</p>
               </div>
             </Link>
           ))}
         </div>
       </div>
+
       {/* CTA */}
       <div className="bg-primary text-white text-center py-16">
         <h2 className="text-3xl mb-4">Bring warmth to your home</h2>
         <Link
           to="/shop"
-          className="px-10 py-4 bg-white text-primary rounded-3xl"
+          className="px-10 py-4 bg-white text-primary rounded-3xl font-medium"
         >
           Shop Now
         </Link>

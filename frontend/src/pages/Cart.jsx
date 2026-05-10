@@ -10,8 +10,6 @@ import {
 import toast from "react-hot-toast";
 import { Trash2, ArrowLeft, ShoppingBag, Plus, Minus } from "lucide-react";
 
-import { BASE_URL } from "../config";
-
 export default function Cart() {
   const dispatch = useDispatch();
   const { items, total } = useSelector((state) => state.cart);
@@ -85,8 +83,12 @@ export default function Cart() {
                 <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden">
                   {item.images?.[0] ? (
                     <img
-                      src={`${BASE_URL}${item.images[0]}`}
+                      src={item.images[0]} // ← FIXED: Direct Cloudinary URL
+                      alt={item.title}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full text-2xl">

@@ -197,7 +197,7 @@ export default function Shop() {
                     <div className="h-48 bg-gray-100 rounded-xl overflow-hidden">
                       {product.images && product.images.length > 0 ? (
                         <img
-                          src={product.images[0]}
+                          src={product.images[0]} // ← Direct Cloudinary URL
                           alt={product.title}
                           className="w-full h-full object-cover"
                           onError={(e) => {

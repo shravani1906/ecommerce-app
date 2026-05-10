@@ -130,7 +130,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen p-6 bg-gray-50 dark:bg-[#121212]">
-      {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold heading-font text-primary">
           My Workspace
@@ -144,7 +143,6 @@ export default function Admin() {
         </button>
       </div>
 
-      {/* FORM */}
       {showForm && (
         <div className="bg-white dark:bg-[#1e1e1e] p-8 rounded-3xl shadow-xl mb-10">
           <div className="flex justify-between items-center mb-6">
@@ -153,7 +151,7 @@ export default function Admin() {
             </h2>
             <button
               onClick={resetForm}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="text-gray-400 hover:text-gray-600"
             >
               <X size={24} />
             </button>
@@ -224,14 +222,13 @@ export default function Admin() {
         </div>
       )}
 
-      {/* OPTIMIZED PRODUCTS GRID */}
+      {/* PRODUCTS GRID - CLEAN IMAGE DISPLAY */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((p) => (
           <div
             key={p._id}
             className="bg-white dark:bg-[#1e1e1e] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all flex flex-col h-full"
           >
-            {/* Image Container */}
             <div className="relative h-56 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
               {p.images && p.images.length > 0 ? (
                 <img
@@ -249,7 +246,6 @@ export default function Admin() {
               )}
             </div>
 
-            {/* Content */}
             <div className="p-5 flex flex-col flex-1">
               <h3 className="font-semibold text-lg line-clamp-2 heading-font text-gray-900 dark:text-white">
                 {p.title}
