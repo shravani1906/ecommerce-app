@@ -1,3 +1,4 @@
+// backend/controllers/productController.js
 const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
@@ -6,12 +7,19 @@ const createProduct = async (req, res) => {
   try {
     let imageUrls = [];
 
+    // Upload to Cloudinary
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: "wick-and-weave",
-        });
-        imageUrls.push(result.secure_url);
+        const result = await cloudinary.uploader.upload_stream(
+          { folder: "wick-and-weave" },
+          (error, result) => {
+            if (error) throw error;
+            imageUrls.push(result.secure_url);
+          },
+        );
+
+        // Pipe buffer to stream
+        result.stream(result.buffer).pipe(result);
       }
     }
 
@@ -25,12 +33,12 @@ const createProduct = async (req, res) => {
     await product.save();
     res.status(201).json(product);
   } catch (err) {
-    console.error("Create Product Error:", err);
+    console.error("Create Error:", err);
     res.status(500).json({ msg: "Error creating product" });
   }
 };
 
-// UPDATE PRODUCT - FIXED
+// UPDATE PRODUCT
 const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -38,11 +46,10 @@ const updateProduct = async (req, res) => {
 
     let imageUrls = product.images || [];
 
-    // If new images are uploaded
     if (req.files && req.files.length > 0) {
       imageUrls = [];
       for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
+        const result = await cloudinary.uploader.upload(file.buffer, {
           folder: "wick-and-weave",
         });
         imageUrls.push(result.secure_url);
@@ -57,7 +64,7 @@ const updateProduct = async (req, res) => {
 
     res.json(updatedProduct);
   } catch (err) {
-    console.error("Update Product Error:", err);
+    console.error("Update Error:", err);
     res.status(500).json({ msg: "Error updating product" });
   }
 };
