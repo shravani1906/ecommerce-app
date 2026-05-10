@@ -1,4 +1,3 @@
-// backend/controllers/productController.js
 const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
@@ -7,19 +6,12 @@ const createProduct = async (req, res) => {
   try {
     let imageUrls = [];
 
-    // Upload to Cloudinary
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const result = await cloudinary.uploader.upload_stream(
-          { folder: "wick-and-weave" },
-          (error, result) => {
-            if (error) throw error;
-            imageUrls.push(result.secure_url);
-          },
-        );
-
-        // Pipe buffer to stream
-        result.stream(result.buffer).pipe(result);
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "wick-and-weave",
+        });
+        imageUrls.push(result.secure_url);
       }
     }
 
@@ -33,7 +25,7 @@ const createProduct = async (req, res) => {
     await product.save();
     res.status(201).json(product);
   } catch (err) {
-    console.error("Create Error:", err);
+    console.error(err);
     res.status(500).json({ msg: "Error creating product" });
   }
 };
@@ -49,7 +41,7 @@ const updateProduct = async (req, res) => {
     if (req.files && req.files.length > 0) {
       imageUrls = [];
       for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.buffer, {
+        const result = await cloudinary.uploader.upload(file.path, {
           folder: "wick-and-weave",
         });
         imageUrls.push(result.secure_url);
@@ -64,12 +56,12 @@ const updateProduct = async (req, res) => {
 
     res.json(updatedProduct);
   } catch (err) {
-    console.error("Update Error:", err);
+    console.error(err);
     res.status(500).json({ msg: "Error updating product" });
   }
 };
 
-// GET ALL
+// Keep other functions same
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
@@ -79,7 +71,6 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-// GET ONE
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -90,7 +81,6 @@ const getProductById = async (req, res) => {
   }
 };
 
-// DELETE
 const deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -100,7 +90,6 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-// UPDATE STOCK
 const updateStock = async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(
